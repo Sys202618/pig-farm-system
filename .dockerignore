@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.git/
+.gitignore
+*.md
+dist/
+build/
+*.spec
+*_check_*.py
+_fix_*.py
+_write_*.py
+_redeploy.py
+_verify_*.py
+node_modules/
+.DS_Store
