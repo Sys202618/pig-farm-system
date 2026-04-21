@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>猪场管理系统</title>
+<link rel="stylesheet" href="css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<div id="app">
+    <!-- 登录页 -->
+    <div id="login-page" class="login-container">
+        <div class="login-box">
+            <h2>猪场管理系统</h2>
+            <div class="login-form">
+                <div class="form-group">
+                    <label>用户名</label>
+                    <input type="text" id="login-username" placeholder="请输入用户名" value="admin">
+                </div>
+                <div class="form-group">
+                    <label>密码</label>
+                    <input type="password" id="login-password" placeholder="请输入密码" value="admin123">
+                </div>
+                <button class="btn btn-primary btn-block" onclick="login()">登录</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主页面 -->
+    <div id="main-page" style="display:none">
+        <!-- 顶部导航 -->
+        <header class="top-header">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                </div>
+                <span class="logo-text">智慧猪场管理系统</span>
+            </div>
+            <div class="header-right">
+                <div class="user-chip">
+                    <div class="user-avatar" id="user-avatar">管</div>
+                    <span id="user-info"></span>
+                </div>
+                <button class="btn btn-outline btn-sm" onclick="logout()" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2);color:#fff">退出</button>
+            </div>
+        </header>
+
+        <div class="main-layout">
+            <!-- 左侧菜单 -->
+            <nav class="left-nav">
+                <!-- 首页 -->
+                <div class="nav-section">
+                    <div class="nav-items show">
+                        <a class="nav-item active" href="#" data-page="home">首页概览</a>
+                    </div>
+                </div>
+                <!-- 基础信息 -->
+                <div class="nav-section">
+                    <div class="nav-title" onclick="toggleNav(this)">基础信息</div>
+                    <div class="nav-items">
+                        <a class="nav-item" href="#" data-page="farm">猪场信息</a>
+                        <a class="nav-item" href="#" data-page="barn">猪舍管理</a>
+                        <a class="nav-item" href="#" data-page="batch">批次管理</a>
+                        <a class="nav-item" href="#" data-page="herd">猪群管理</a>
+                        <a class="nav-item" href="#" data-page="employee">员工管理</a>
+                    </div>
+                </div>
+                <!-- 生产管理 -->
+                <div class="nav-section">
+                    <div class="nav-title" onclick="toggleNav(this)">生产管理</div>
+                    <div class="nav-items">
+                        <a class="nav-item" href="#" data-page="breeding">配种记录</a>
+                        <a class="nav-item" href="#" data-page="farrowing">产仔记录</a>
+                        <a class="nav-item" href="#" data-page="weaning">断奶记录</a>
+                        <a class="nav-item" href="#" data-page="transfer">转舍记录</a>
+                        <a class="nav-item" href="#" data-page="death">死亡记录</a>
+                        <a class="nav-item" href="#" data-page="sales">销售记录</a>
+                    </div>
+                </div>
+                <!-- 免疫管理 -->
+                <div class="nav-section">
+                    <div class="nav-title" onclick="toggleNav(this)">免疫管理</div>
+                    <div class="nav-items">
+                        <a class="nav-item" href="#" data-page="immune-plan">免疫计划</a>
+                        <a class="nav-item" href="#" data-page="immune-record">免疫记录</a>
+                        <a class="nav-item" href="#" data-page="immune-reminder">免疫提醒</a>
+                        <a class="nav-item" href="#" data-page="immune-report">免疫报表</a>
+                    </div>
+                </div>
+                <!-- 财务管理 -->
+                <div class="nav-section">
+                    <div class="nav-title" onclick="toggleNav(this)">财务管理</div>
+                    <div class="nav-items">
+                        <a class="nav-item" href="#" data-page="income">收入管理</a>
+                        <a class="nav-item" href="#" data-page="cost">成本管理</a>
+                    </div>
+                </div>
+                <!-- 报表中心 -->
+                <div class="nav-section">
+                    <div class="nav-title" onclick="toggleNav(this)">报表中心</div>
+                    <div class="nav-items">
+                        <a class="nav-item" href="#" data-page="rpt-inventory">存栏统计</a>
+                        <a class="nav-item" href="#" data-page="rpt-farrowing">产仔统计</a>
+                        <a class="nav-item" href="#" data-page="rpt-weaning">断奶统计</a>
+                        <a class="nav-item" href="#" data-page="rpt-sales">销售统计</a>
+                        <a class="nav-item" href="#" data-page="rpt-death">死亡统计</a>
+                        <a class="nav-item" href="#" data-page="rpt-income-expense">月度收支</a>
+                        <a class="nav-item" href="#" data-page="rpt-cost">成本汇总</a>
+                        <a class="nav-item" href="#" data-page="rpt-perhead">头均成本</a>
+                    </div>
+                </div>
+                <!-- 系统设置 -->
+                <div class="nav-section">
+                    <div class="nav-title" onclick="toggleNav(this)">系统设置</div>
+                    <div class="nav-items">
+                        <a class="nav-item" href="#" data-page="profile">个人中心</a>
+                        <a class="nav-item" href="#" data-page="params">参数设置</a>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- 右侧内容 -->
+            <main class="content-area">
+                <!-- 筛选栏 -->
+                <div class="filter-bar" id="filter-bar">
+                    <div class="filter-item">
+                        <label>猪场</label>
+                        <select id="sel-farm"><option value="">全部猪场</option></select>
+                    </div>
+                    <div class="filter-item" id="filter-month-wrapper">
+                        <label>月份</label>
+                        <input type="month" id="sel-month">
+                    </div>
+                    <div class="filter-item" id="filter-keyword-wrapper">
+                        <label>关键字</label>
+                        <input type="text" id="sel-keyword" placeholder="搜索...">
+                    </div>
+                    <div class="filter-actions">
+                        <button class="btn btn-primary" onclick="doQuery()">查询</button>
+                        <button class="btn btn-success" onclick="openAddModal()">新增</button>
+                        <button class="btn btn-outline" onclick="openImportModal()">批量导入</button>
+                        <button class="btn btn-outline" onclick="exportCurrentList()">导出Excel</button>
+                    </div>
+                </div>
+
+                <!-- 内容区 -->
+                <div class="page-content" id="page-content">
+                    <!-- 动态加载 -->
+                </div>
+            </main>
+        </div>
+    </div>
+</div>
+
+<!-- 通用模态框 -->
+<div id="modal" class="modal">
+    <div class="modal-content" id="modal-content-wrap" style="max-width:700px">
+        <div class="modal-header">
+            <div>
+                <h3 id="modal-title">新增</h3>
+            </div>
+            <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+        <div class="modal-body" id="modal-body">
+            <!-- 动态表单 -->
+        </div>
+        <div class="modal-footer" id="modal-footer-btns">
+            <button class="btn btn-outline" onclick="onCancelClick()">取消</button>
+            <button class="btn btn-primary" id="modal-save-btn" onclick="saveData()">确定 / 保存</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast提示 -->
+<div id="toast" class="toast"></div>
+
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

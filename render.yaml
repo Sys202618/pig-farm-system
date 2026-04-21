@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: pig-farm-system
+    runtime: python
+    plan: free
+    buildCommand: |
+      pip install -r backend/requirements.txt
+      python backend/init_postgres.py
+    startCommand: gunicorn -w 2 -b 0.0.0.0:$PORT backend.app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: DATABASE_URL
+        fromDatabase:
+          name: pig-farm-db
+          property: connectionString
+
+databases:
+  - name: pig-farm-db
+    plan: free
+    ipAllowList: []
