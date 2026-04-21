@@ -3,13 +3,14 @@
 import os
 import sqlite3
 
-DATABASE_URL = os.environ.get('DATABASE_URL')
+# Zeabur uses POSTGRES_URL, Render uses DATABASE_URL — check both
+DATABASE_URL = os.environ.get('DATABASE_URL') or os.environ.get('POSTGRES_URL')
 USE_POSTGRES = bool(DATABASE_URL)
 
 if USE_POSTGRES:
     import psycopg2
     from psycopg2.extras import RealDictCursor
-    # Render's DATABASE_URL starts with postgres://, SQLAlchemy needs postgresql://
+    # Normalize: postgres:// → postgresql://
     if DATABASE_URL.startswith('postgres://'):
         DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
 
@@ -120,33 +121,9 @@ def get_db_conn():
     return DatabaseConnection(conn)
 
 def init_postgres_tables(conn):
-    """Initialize PostgreSQL tables (SQLite schema needs adjustments)"""
-    c = conn.cursor()
-    
-    # Users table
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS users (
-            id SERIAL PRIMARY KEY,
-            username VARCHAR(50) UNIQUE NOT NULL,
-            password VARCHAR(64) NOT NULL,
-            role VARCHAR(20) DEFAULT 'user',
-            token VARCHAR(64),
-            token_exp TIMESTAMP,
-            created_at TIMESTAMP DEFAULT NOW()
-        )
-    ''')
-    
-    # Add default admin if not exists
-    c.execute("SELECT * FROM users WHERE username='admin'")
-    if not c.fetchone():
-        import hashlib
-        pw_hash = hashlib.md5('admin123'.encode()).hexdigest()
-        c.execute(
-            "INSERT INTO users (username, password, role) VALUES (%s, %s, %s)",
-            ('admin', pw_hash, 'admin')
-        )
-    
-    conn.commit()
+    """Delegate to init_postgres module for full table creation"""
+    from init_postgres import init_postgres_tables as _init
+    _init(conn)
 
 # Export for app.py
 __all__ = ['get_db_conn', 'USE_POSTGRES', 'init_postgres_tables']

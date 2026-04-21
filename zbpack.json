@@ -1,0 +1,7 @@
+{
+  "app_dir": ".",
+  "build_command": "pip install -r backend/requirements.txt && cp -r frontend backend/frontend",
+  "start_command": "cd backend && gunicorn -w 2 -b 0.0.0.0:$PORT app:app",
+  "install_command": "pip install -r backend/requirements.txt",
+  "python_version": "3.12"
+}

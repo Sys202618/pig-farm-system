@@ -33,6 +33,17 @@ else:
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     FRONTEND_DIR = os.path.join(BASE_DIR, 'frontend')
 
+# Cloud deployment: if frontend/ not found at default path, try sibling directory
+if not os.path.isdir(FRONTEND_DIR):
+    _alt = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'frontend')
+    if os.path.isdir(_alt):
+        FRONTEND_DIR = os.path.normpath(_alt)
+    else:
+        # Try current directory (Zeabur may copy frontend into backend)
+        _alt2 = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'frontend')
+        if os.path.isdir(_alt2):
+            FRONTEND_DIR = _alt2
+
 DB_PATH = os.path.join(BASE_DIR, 'data', 'pig_farm.db')
 
 app = Flask(__name__, template_folder=FRONTEND_DIR, static_folder=FRONTEND_DIR, static_url_path='/')
@@ -1696,6 +1707,16 @@ def get_config():
 @app.route('/')
 def index():
     return app.send_static_file('index.html')
+
+# --- Cloud init: auto-create PostgreSQL tables on first run ---
+if USE_POSTGRES:
+    try:
+        _init_conn = get_db_conn()
+        init_postgres_tables(_init_conn)
+        _init_conn.close()
+        print('[Cloud] PostgreSQL tables initialized')
+    except Exception as e:
+        print(f'[Cloud] PostgreSQL init error: {e}')
 
 if __name__ == '__main__':
     data_dir = os.path.join(BASE_DIR, 'data')
