@@ -1731,4 +1731,5 @@ if __name__ == '__main__':
             shutil.copy2(bundled_db, db_default)
     print(f'Database: {DB_PATH}')
     print(f'BASE_DIR: {BASE_DIR}')
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    import os
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=True)

@@ -1,0 +1,5 @@
+packages = []
+
+[python]
+version = "3.12"
+requirementsFile = "backend/requirements.txt"
